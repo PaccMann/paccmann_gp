@@ -83,19 +83,21 @@ def main(parser_namespace):
         smiles=[]
         while smiles ==[]: #loop as some molecules are not valid smiles
             mols_numerical=gru_vae.generate(latent_point,     prime_input=torch.LongTensor([smiles_language.start_index]), end_token=torch.LongTensor([smiles_language.stop_index]))
-            
+
             smiles=numerical_to_cleaned_smiles(mols_numerical,smiles_language)
 
         mweights=[MolWt(Chem.MolFromSmiles(smile)) for smile in smiles]
-        return abs(target-mweights[0])
+        return abs(target-mweights[0]) # Different formula?
 
     #BO
     res = gp_minimize(MW_minimisation,# the function to minimize
-                  [(-5.0, 5.0)]*256,  # the bounds on each dimension of x
+                  [(-5.0, 5.0)]*256,  # Boundaries
                   acq_func="EI",      # the acquisition function
                   n_calls=15,         # the number of evaluations of f
                   n_random_starts=5,  # the number of random initialization p
                   random_state=1234)
+
+#Questions: Not too sure about input and boundaries?
 
     #Generate 10 Smiles for optimised latent point
     Optimised_smiles=[]
