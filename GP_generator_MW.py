@@ -2,8 +2,10 @@
 
 import torch
 from rdkit import Chem
-from rdkit.Chem.Descriptors import MolWt
+from rdkit.Chem.Descriptors import MolWt, qed
 from skopt import gp_minimize
+from skopt.space import Real
+from paccmann_generator.drug_evaluators.sas  import  SAS
 
 class GP_generator_for_MW():
     """ SVAE GP generator minimisation functions """
@@ -17,7 +19,7 @@ class GP_generator_for_MW():
         """
         super(GP_generator_for_MW, self).__init__()
         self.SVAEmodel=SVAEmodel
-
+        self.sas = SAS()
 
     def generate_smiles(self,latent_point,tosmiles=True):
         """
@@ -54,28 +56,36 @@ class GP_generator_for_MW():
             return mols_numerical
 
 
-    def Optimisation_process(self,targetMW):
+    def Optimisation_process(self, minimisation,target=None):
         """
         Optimisation with GP
 
         Args:
             targetMW: target molecular weight of type float or int
         """
-        self.target=targetMW
-        res = gp_minimize(self.MW_minimisation_function,
-                      [(-5.0, 5.0)]*256, #256 is latent dimensions
+        Boundaries_latentdim=[(-5.0, 5.0)]*256
+        #Target=Real(name='targetMW',300)
+        if minimisation=='MW':
+            function=self.MW_minimisation_function
+            self.target=target
+        elif minimisation=='QED':
+            function=self.QED_minimisation_function
+        elif minimisation =="SA":
+            function=self.SAs_minimisation_function
+
+        res = gp_minimize(function,
+                      dimensions=Boundaries_latentdim, #256 is latent dimensions
                       acq_func="EI",
-                      n_calls=100,
+                      n_calls=150,
                       n_initial_points=20,
                       initial_point_generator='random',
                       random_state=1234)
 
         return res
 
-
     def MW_minimisation_function(self, latentlist):
         """
-        Function to minimise in Bayesian optimisation
+        Function to minimise in Bayesian optimisation for MW
 
         Args:
             latentarray: the input list of latent coordinates of len=latent_dim
@@ -89,3 +99,37 @@ class GP_generator_for_MW():
         mweights=[MolWt(Chem.MolFromSmiles(smile)) for smile in smiles]
 
         return abs(self.target-mweights[0])
+
+    def QED_minimisation_function(self, latentlist):
+        """
+        Function to minimise in Bayesian optimisation for QED
+
+        Args:
+            latentarray: the input list of latent coordinates of len=latent_dim
+        """
+
+        smiles=[]
+        latent_point=torch.tensor([[latentlist]])
+        while smiles ==[]: #loop as some molecules are not valid smiles
+            smiles=self.generate_smiles(latent_point)
+        QEDvalue=[qed(Chem.MolFromSmiles(smile)) for smile in smiles]
+
+        return 1-QEDvalue[0]
+
+    def SAs_minimisation_function(self, latentlist):
+        """
+        Function to minimise in Bayesian optimisation for SA score
+
+        Args:
+            latentarray: the input list of latent coordinates of len=latent_dim
+        """
+
+        smiles=[]
+        latent_point=torch.tensor([[latentlist]])
+        while smiles ==[]: #loop as some molecules are not valid smiles
+            smiles=self.generate_smiles(latent_point)
+        SAscore=[self.sas(smile) for smile in smiles]
+
+        return SAscore[0]
+
+        #sas score between 1-10
