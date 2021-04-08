@@ -1,5 +1,6 @@
 """Minimization function module."""
 
+
 class MinimizationFunction:
     def evaluate(self, point):
         raise NotImplementedError("Please Implement this evaluation method")

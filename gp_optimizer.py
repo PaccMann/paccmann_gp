@@ -3,8 +3,10 @@
 import torch
 from skopt import gp_minimize
 
+
 class GPOptimizer:
     """GP Optimisation module."""
+
     def __init__(self, minimization_function):
         """
         Initialization.
@@ -15,7 +17,7 @@ class GPOptimizer:
 
         self.minimization_function = minimization_function
 
-    def optimize(self,params):
+    def optimize(self, params):
         """
         GP optimisation.
 
@@ -26,5 +28,5 @@ class GPOptimizer:
             res: The optimization result returned as a OptimizeResult object
         """
 
-        res = gp_minimize(self.minimization_function,**params)
+        res = gp_minimize(self.minimization_function, **params)
         return res
