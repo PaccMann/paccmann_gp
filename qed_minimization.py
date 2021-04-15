@@ -27,6 +27,13 @@ class QEDMinimization(DecoderBasedMinimization):
         batch_latent = latent_point.repeat(1, self.batch, 1)
 
         smiles = self.generator.generate_smiles(batch_latent)
-        qed_value = [qed(Chem.MolFromSmiles(smile)) for smile in smiles]
 
-        return 1 - (sum(qed_value) / len(qed_value))
+        qed_values = []
+        for smile in smiles:
+            try:
+                qed_values.append(qed(Chem.MolFromSmiles(smile)))
+            except:
+                qed_values.append(0)
+                print("QED calculation failed.")
+
+        return 1 - (sum(qed_values) / len(qed_values))

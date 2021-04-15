@@ -20,24 +20,29 @@ class AffinityMinimization(DecoderBasedMinimization):
         # self.device = get_device()
         self.to_tensor = ToTensor()
 
+        self.receptor = receptor
+
         # protein to tensor
-        pad_protein_predictor = LeftPadding(
+        self.pad_protein_predictor = LeftPadding(
             self.predictor.protein_padding_length,
             self.predictor.protein_language.padding_index,
         )
 
-        protein_num = torch.unsqueeze(
+        self.receptor_numeric = torch.unsqueeze(
             self.to_tensor(
-                pad_protein_predictor(
+                self.pad_protein_predictor(
                     self.predictor.protein_language.sequence_to_token_indexes(
-                        [receptor]
+                        [self.receptor]
                     )
                 )
             ),
             0,
         )
 
-        self.receptor = protein_num
+        self.pad_smiles_predictor = LeftPadding(
+            self.predictor.smiles_padding_length,
+            self.predictor.smiles_language.padding_index,
+        )
 
     def evaluate(self, point):
         """
@@ -54,29 +59,31 @@ class AffinityMinimization(DecoderBasedMinimization):
 
         smiles = self.generator.generate_smiles(batch_latent)
 
-        pad_smiles_predictor = LeftPadding(
-            self.predictor.smiles_padding_length,
-            self.predictor.smiles_language.padding_index,
+        # smiles to tensor for affinity prediction
+
+        smiles_tensor = torch.cat(
+            [
+                torch.unsqueeze(
+                    self.to_tensor(
+                        self.pad_smiles_predictor(
+                            self.predictor.smiles_language.smiles_to_token_indexes(
+                                smile
+                            )
+                        )
+                    ),
+                    0,
+                )
+                for smile in smiles
+            ],
+            dim=0,
         )
 
-        smiles_num = [
-            torch.unsqueeze(
-                self.to_tensor(
-                    pad_smiles_predictor(
-                        self.predictor.smiles_language.smiles_to_token_indexes(smile)
-                    )
-                ),
-                0,
-            )
-            for smile in smiles
-        ]
+        protein_tensor = self.receptor_numeric.repeat(len(smiles), 1)
 
-        smiles_tensor = torch.cat(smiles_num, dim=0)
-
-        protein_tensor = self.receptor.repeat(len(smiles), 1)
+        # Affinity predicition
         with torch.no_grad():
-            affinity_prediction, pred_dict = self.predictor(smiles_tensor, protein_tensor)
+            affinity_prediction, pred_dict = self.predictor(
+                smiles_tensor, protein_tensor
+            )
 
-        affinity_prediction = torch.squeeze(affinity_prediction,1).numpy()
-
-        return 1 - (sum(affinity_prediction) / len(affinity_prediction))
+        return 1 - (sum(torch.squeeze(affinity_prediction, 1).numpy()) / len(smiles))

@@ -32,6 +32,11 @@ class MWMinimization(DecoderBasedMinimization):
 
         smiles = self.generator.generate_smiles(batch_latent)
 
-        mweight = [MolWt(Chem.MolFromSmiles(smile)) for smile in smiles]
+        mweights = []
+        for smile in smiles:
+            try:
+                mweights.append(MolWt(Chem.MolFromSmiles(smile)))
+            except:
+                print("MW calculation failed.")
 
-        return abs(self.target - (sum(mweight) / len(mweight)))
+        return abs(self.target - (sum(mweights) / len(mweights)))

@@ -27,6 +27,13 @@ class SAMinimization(DecoderBasedMinimization):
         latent_point = torch.tensor([[point]])
         batch_latent = latent_point.repeat(1, self.batch, 1)
         smiles = self.generator.generate_smiles(batch_latent)
-        sa_score = [SAS(smile) for smile in smiles]
 
-        return sum(sa_score) / len(sa_score)
+        sa_scores = []
+        for smile in smiles:
+            try:
+                sa_scores.append(SAS(smile))
+            except:
+                sa_scores.append(1)
+                print("SA calculation failed.")
+
+        return sum(sa_scores) / len(sa_scores)
