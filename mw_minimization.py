@@ -4,7 +4,7 @@ import torch
 from rdkit import Chem
 from rdkit.Chem.Descriptors import MolWt
 from minimization_function import DecoderBasedMinimization
-
+from loguru import logger
 
 class MWMinimization(DecoderBasedMinimization):
     """ Minimization function for MW"""
@@ -37,6 +37,6 @@ class MWMinimization(DecoderBasedMinimization):
             try:
                 mweights.append(MolWt(Chem.MolFromSmiles(smile)))
             except:
-                print("MW calculation failed.")
+                logger.info("MW calculation failed.")
 
         return abs(self.target - (sum(mweights) / len(mweights)))

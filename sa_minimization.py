@@ -5,7 +5,7 @@ from rdkit import Chem
 from rdkit.Chem.Descriptors import MolWt
 from minimization_function import DecoderBasedMinimization
 from paccmann_generator.drug_evaluators.sas import SAS
-
+from loguru import logger
 
 class SAMinimization(DecoderBasedMinimization):
     """ Minimization function for SA"""
@@ -35,6 +35,6 @@ class SAMinimization(DecoderBasedMinimization):
                 sa_scores.append(self.sascore(smile))
             except:
                 sa_scores.append(10)
-                print("SA calculation failed.")
+                logger.info("SA calculation failed.")
 
         return sum(sa_scores) / len(sa_scores)

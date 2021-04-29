@@ -38,7 +38,7 @@ class SmilesGenerator:
             search=self.search,
         )
 
-        # Convert numerical ooutput to smiles
+        # Convert numerical output to smiles
         if tosmiles == True:
             smiles_num = [
                 self.model.smiles_language.token_indexes_to_smiles(num_mol.tolist())

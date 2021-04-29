@@ -4,7 +4,7 @@ import torch
 from rdkit import Chem
 from rdkit.Chem.Descriptors import qed
 from minimization_function import DecoderBasedMinimization
-
+from loguru import logger
 
 class QEDMinimization(DecoderBasedMinimization):
     """ Minimization function for QED"""
@@ -34,6 +34,6 @@ class QEDMinimization(DecoderBasedMinimization):
                 qed_values.append(qed(Chem.MolFromSmiles(smile)))
             except:
                 qed_values.append(0)
-                print("QED calculation failed.")
+                logger.info("QED calculation failed.")
 
         return 1 - (sum(qed_values) / len(qed_values))
