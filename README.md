@@ -32,5 +32,6 @@ positional arguments:
   svae_path          Path to downloaded SVAE model.
   affinity_path      Path to the downloaded affinity prediction model.
   optimisation_name  Name for the optimisation.
+```
 
 The trained SVAE and affinity models can be downloaded from the SELFIESVAE and affinity folders located [here](https://ibm.ent.box.com/v/paccmann-sarscov2/folder/122603752964).
