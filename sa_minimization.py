@@ -14,6 +14,7 @@ class SAMinimization(DecoderBasedMinimization):
         super(SAMinimization, self).__init__(smiles_decoder)
         self.generator = smiles_decoder
         self.batch = batch_size
+        self.sascore = SAS()
 
     def evaluate(self, point):
         """
@@ -31,9 +32,9 @@ class SAMinimization(DecoderBasedMinimization):
         sa_scores = []
         for smile in smiles:
             try:
-                sa_scores.append(SAS(smile))
+                sa_scores.append(self.sascore(smile))
             except:
-                sa_scores.append(1)
+                sa_scores.append(10)
                 print("SA calculation failed.")
 
         return sum(sa_scores) / len(sa_scores)
