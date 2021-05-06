@@ -117,7 +117,7 @@ def main(parser_namespace):
         latent_point = torch.tensor([[res.x]])
 
         with open(results_file_name + '_LP' + str(j+1) + '.pkl', 'wb') as f:
-            pickle.dump(latent_point, f)
+            pickle.dump(latent_point, f, protocol = 2)
 
         smile_set = set()
 

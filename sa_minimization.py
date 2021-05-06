@@ -37,4 +37,4 @@ class SAMinimization(DecoderBasedMinimization):
                 sa_scores.append(10)
                 logger.info("SA calculation failed.")
 
-        return sum(sa_scores) / len(sa_scores)
+        return sum(sa_scores) / (len(sa_scores)* 10) # /10 to get number between 0-1 

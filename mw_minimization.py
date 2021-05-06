@@ -5,6 +5,7 @@ from rdkit import Chem
 from rdkit.Chem.Descriptors import MolWt
 from minimization_function import DecoderBasedMinimization
 from loguru import logger
+from math import exp
 
 class MWMinimization(DecoderBasedMinimization):
     """ Minimization function for MW"""
@@ -39,4 +40,4 @@ class MWMinimization(DecoderBasedMinimization):
             except:
                 logger.info("MW calculation failed.")
 
-        return abs(self.target - (sum(mweights) / len(mweights)))
+        return 1 - exp(- abs(self.target - (sum(mweights) / len(mweights)))
