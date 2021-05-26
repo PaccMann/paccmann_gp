@@ -1,28 +1,23 @@
 """Generate smiles from latent code with BO for MW."""
 import json
-import logging
 import os
-import sys
 import argparse
 import torch
 from rdkit import Chem
-from rdkit.Chem.Descriptors import MolWt, qed
-import csv
+from rdkit.Chem.Descriptors import qed
 from pytoda.transforms import ToTensor, LeftPadding
 from paccmann_generator.drug_evaluators.sas import SAS
 from paccmann_chemistry.models.vae import StackGRUDecoder, StackGRUEncoder, TeacherVAE
-from paccmann_chemistry.utils import collate_fn, get_device, disable_rdkit_logging
-from pytoda.datasets import SMILESDataset
+from paccmann_chemistry.utils import get_device, disable_rdkit_logging
 from pytoda.smiles.smiles_language import SMILESLanguage
 from pytoda.proteins.protein_language import ProteinLanguage
 from paccmann_predictor.models import MODEL_FACTORY
-from gp_optimizer import GPOptimizer
-from smiles_generator import SmilesGenerator
-from mw_minimization import MWMinimization
-from sa_minimization import SAMinimization
-from qed_minimization import QEDMinimization
-from affinity_minimization import AffinityMinimization
-from combined_minimization import CombinedMinimization
+from paccmann_gp.gp_optimizer import GPOptimizer
+from paccmann_gp.smiles_generator import SmilesGenerator
+from paccmann_gp.sa_minimization import SAMinimization
+from paccmann_gp.qed_minimization import QEDMinimization
+from paccmann_gp.affinity_minimization import AffinityMinimization
+from paccmann_gp.combined_minimization import CombinedMinimization
 from loguru import logger
 import pickle
 
@@ -34,14 +29,11 @@ parser.add_argument(
 parser.add_argument(
     "affinity_path", type=str, help="Path to the trained model (SELFIES VAE)."
 )
-parser.add_argument(
-    "optimisation_name", type=str, help="Name for optimisation."
-)
-
+parser.add_argument("optimisation_name", type=str, help="Name for optimisation.")
 
 
 def main(parser_namespace):
-    # Model loading
+    # model loading
     disable_rdkit_logging()
     affinity_path = parser_namespace.affinity_path
     svae_path = parser_namespace.svae_path
@@ -97,7 +89,7 @@ def main(parser_namespace):
     qed_function = QEDMinimization(smiles_generator, 30)
     sa_function = SAMinimization(smiles_generator, 30)
     combined_minimization = CombinedMinimization(
-        [target_minimization_function, qed_function, sa_function], [0.75, 1, 0.5], 1
+        [target_minimization_function, qed_function, sa_function], 1, [0.75, 1, 0.5]
     )
     target_optimizer = GPOptimizer(combined_minimization.evaluate)
 
@@ -109,15 +101,15 @@ def main(parser_namespace):
         initial_point_generator="random",
         random_state=1234,
     )
-    logger.info('Optimisation parameters: {params}',params=params)
+    logger.info("Optimisation parameters: {params}", params=params)
 
-    #Optimisation
+    # optimisation
     for j in range(5):
         res = target_optimizer.optimize(params)
         latent_point = torch.tensor([[res.x]])
 
-        with open(results_file_name + '_LP' + str(j+1) + '.pkl', 'wb') as f:
-            pickle.dump(latent_point, f, protocol = 2)
+        with open(results_file_name + "_LP" + str(j + 1) + ".pkl", "wb") as f:
+            pickle.dump(latent_point, f, protocol=2)
 
         smile_set = set()
 
@@ -165,16 +157,16 @@ def main(parser_namespace):
         protein_num = protein_num.repeat(len(smile_set), 1)
 
         with torch.no_grad():
-            pred, pred_dict = affinity_predictor(smiles_tensor, protein_num)
+            pred, _ = affinity_predictor(smiles_tensor, protein_num)
         affinities = torch.squeeze(pred, 1).numpy()
 
         sas = SAS()
         sa_scores = [sas(smile) for smile in smile_set]
         qed_scores = [qed(Chem.MolFromSmiles(smile)) for smile in smile_set]
 
-        #save to file
+        # save to file
         file = results_file_name + str(j + 1) + ".txt"
-        logger.info('Creating {file}', file=file)
+        logger.info("creating {file}", file=file)
 
         with open(file, "w") as f:
             f.write(

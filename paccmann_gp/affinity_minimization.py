@@ -1,26 +1,38 @@
-"""Target affinity minimization Class module."""
-
+"""Target affinity minimization module."""
 import torch
-from rdkit import Chem
-from minimization_function import DecoderBasedMinimization
+from typing import Any
 from pytoda.transforms import ToTensor, LeftPadding
+from .minimization_function import DecoderBasedMinimization
+from .smiles_generator import SmilesGenerator
 
 
 class AffinityMinimization(DecoderBasedMinimization):
-    """ Minimization function for target affinity"""
+    """Minimization function for target affinity."""
 
-    def __init__(self, smiles_decoder, batch_size, affinity_predictor, receptor):
+    def __init__(
+        self,
+        smiles_decoder: SmilesGenerator,
+        batch_size: int,
+        affinity_predictor: Any,
+        protein: str,
+    ) -> None:
+        """
+        Initialize an affinity minimization function.
 
+        Args:
+            smiles_decoder: a SMILES generator.
+            batch_size: size of the batch for evaluation.
+            affinity_predictor: an affinity predictor.
+            protein: string descrition of a protein compatible with the generator and the predictor.
+        """
         super(AffinityMinimization, self).__init__(smiles_decoder)
 
-        self.generator = smiles_decoder
         self.batch = batch_size
 
         self.predictor = affinity_predictor
-        # self.device = get_device()
         self.to_tensor = ToTensor()
 
-        self.receptor = receptor
+        self.protein = protein
 
         # protein to tensor
         self.pad_protein_predictor = LeftPadding(
@@ -28,11 +40,11 @@ class AffinityMinimization(DecoderBasedMinimization):
             self.predictor.protein_language.padding_index,
         )
 
-        self.receptor_numeric = torch.unsqueeze(
+        self.protein_numeric = torch.unsqueeze(
             self.to_tensor(
                 self.pad_protein_predictor(
                     self.predictor.protein_language.sequence_to_token_indexes(
-                        [self.receptor]
+                        [self.protein]
                     )
                 )
             ),
@@ -44,15 +56,16 @@ class AffinityMinimization(DecoderBasedMinimization):
             self.predictor.smiles_language.padding_index,
         )
 
-    def evaluate(self, point):
+    def evaluate(self, point: Any) -> float:
         """
-        Evaluation of the target affinity minimization function.
+        Evaluate a point.
 
-        Arguments:
-            point: The latent coordinate (list of size latent_dim)
+        Args:
+            point: point to evaluate.
 
+        Returns:
+            evaluation for the given point.
         """
-
         latent_point = torch.tensor([[point]])
 
         batch_latent = latent_point.repeat(1, self.batch, 1)
@@ -60,7 +73,6 @@ class AffinityMinimization(DecoderBasedMinimization):
         smiles = self.generator.generate_smiles(batch_latent)
 
         # smiles to tensor for affinity prediction
-
         smiles_tensor = torch.cat(
             [
                 torch.unsqueeze(
@@ -78,9 +90,9 @@ class AffinityMinimization(DecoderBasedMinimization):
             dim=0,
         )
 
-        protein_tensor = self.receptor_numeric.repeat(len(smiles), 1)
+        protein_tensor = self.protein_numeric.repeat(len(smiles), 1)
 
-        # Affinity predicition
+        # affinity predicition
         with torch.no_grad():
             affinity_prediction, pred_dict = self.predictor(
                 smiles_tensor, protein_tensor

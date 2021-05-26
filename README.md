@@ -2,7 +2,6 @@
 
 Bayesian Optimisation for generative models.
 
-
 ## Installation
 
 Create a conda environment:
