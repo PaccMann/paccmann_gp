@@ -47,6 +47,6 @@ class MWMinimization(DecoderBasedMinimization):
             try:
                 mweights.append(MolWt(Chem.MolFromSmiles(smile)))
             except Exception:
-                logger.info("MW calculation failed.")
+                logger.warning("MW calculation failed.")
 
         return 1 - exp(-abs(self.target - (sum(mweights) / len(mweights))))

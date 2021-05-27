@@ -43,6 +43,6 @@ class QEDMinimization(DecoderBasedMinimization):
                 qed_values.append(qed(Chem.MolFromSmiles(smile)))
             except Exception:
                 qed_values.append(0)
-                logger.info("QED calculation failed.")
+                logger.warning("QED calculation failed.")
 
         return 1 - (sum(qed_values) / len(qed_values))
