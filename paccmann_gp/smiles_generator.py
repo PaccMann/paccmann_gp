@@ -42,9 +42,9 @@ class SmilesGenerator:
         if to_smiles:
             smiles_num = [
                 self.model.smiles_language.token_indexes_to_smiles(
-                    molecule_numberical.tolist()
+                    molecule_numerical.tolist()
                 )
-                for molecule_numberical in iter(molecules_numerical)
+                for molecule_numerical in iter(molecules_numerical)
             ]
 
             smiles = [
