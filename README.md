@@ -1,6 +1,11 @@
+[![Python package](https://github.com/PaccMann/paccmann_gp/actions/workflows/python-package.yml/badge.svg)](https://github.com/PaccMann/paccmann_gp/actions/workflows/python-package.yml)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 # paccmann_gp
 
-Bayesian Optimisation for generative models.
+Bayesian Optimisation with Gaussian Processes for molecular generative models.
 
 ## Installation
 
@@ -34,3 +39,12 @@ positional arguments:
 ```
 
 The trained SVAE and affinity models can be downloaded from the SELFIESVAE and affinity folders located [here](https://ibm.ent.box.com/v/paccmann-sarscov2/folder/122603752964).
+
+## Citation
+If you use this repo in your projects, please temporarily cite the following:
+
+@article{born2021active,
+  title={Active site sequence representation of human kinases outperforms full sequence for affinity prediction and inhibitor generation: 3D effects in a 1D model},
+  author={Born, Jannis and Huynh, Tien and Stroobants, Astrid and Cornell, Wendy and Manica, Matteo},
+  year={2021}
+}
