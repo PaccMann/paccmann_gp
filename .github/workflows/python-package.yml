@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
@@ -39,4 +39,3 @@ jobs:
       run: |
         python3 -c "import paccmann_gp"
         python3 examples/example.py -h
-        python3 scripts/flexible_training.py -h
