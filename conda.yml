@@ -3,10 +3,9 @@ channels:
   - https://conda.anaconda.org/rdkit
   - conda-forge
 dependencies:
-  - rdkit=2019.03.1
   - scikit-optimize=0.8.1
   - loguru=0.5.3
-  - python>=3.7,<3.8
+  - python=3.7
   - pip>=19.1,<20.3
   - pip:
     - -r file:requirements.txt

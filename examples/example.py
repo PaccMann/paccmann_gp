@@ -27,7 +27,7 @@ parser.add_argument(
     "svae_path", type=str, help="Path to the trained model (SELFIES VAE)"
 )
 parser.add_argument(
-    "affinity_path", type=str, help="Path to the trained model (SELFIES VAE)."
+    "affinity_path", type=str, help="Path to the trained model (affinity predictor)."
 )
 parser.add_argument("optimisation_name", type=str, help="Name for optimisation.")
 

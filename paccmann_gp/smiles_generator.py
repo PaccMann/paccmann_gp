@@ -1,9 +1,13 @@
 """SMILES decoding from latent space module."""
-import torch
 from typing import Any, List
+
+import torch
 from rdkit import Chem
-from paccmann_chemistry.utils.search import SamplingSearch
 from paccmann_chemistry.models.vae import TeacherVAE
+from paccmann_chemistry.utils import get_device
+from paccmann_chemistry.utils.search import SamplingSearch
+
+device = get_device()
 
 
 class SmilesGenerator:
@@ -33,8 +37,12 @@ class SmilesGenerator:
         """
         molecules_numerical = self.model.generate(
             latent_point,
-            prime_input=torch.LongTensor([self.model.smiles_language.start_index]),
-            end_token=torch.LongTensor([self.model.smiles_language.stop_index]),
+            prime_input=torch.LongTensor([self.model.smiles_language.start_index]).to(
+                device
+            ),
+            end_token=torch.LongTensor([self.model.smiles_language.stop_index]).to(
+                device
+            ),
             search=self.search,
         )
 
