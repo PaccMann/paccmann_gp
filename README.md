@@ -47,6 +47,8 @@ If you use this repo in your projects, please temporarily cite the following:
 @article{born2021active,
   title={Active site sequence representation of human kinases outperforms full sequence for affinity prediction and inhibitor generation: 3D effects in a 1D model},
   author={Born, Jannis and Huynh, Tien and Stroobants, Astrid and Cornell, Wendy and Manica, Matteo},
+  publisher={ChemRxiv},
+  doi={10.33774/chemrxiv-2021-np7xj},
   year={2021}
 }
 ```
