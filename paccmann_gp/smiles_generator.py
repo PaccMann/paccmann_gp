@@ -13,16 +13,18 @@ device = get_device()
 class SmilesGenerator:
     """ Smiles Generator """
 
-    def __init__(self, model: TeacherVAE, search=SamplingSearch()):
+    def __init__(self, model: TeacherVAE, search=SamplingSearch(), generated_length=100):
         """
         Initialization.
 
         Args:
             model: loaded pretrained SVAE model with its parameters and smiles_language.
             search: search used in decoding SMILES.
+            generated_length: length of the generated SMILES string.
         """
         self.model = model
         self.search = search
+        self.generated_length = generated_length
 
     def generate_smiles(self, latent_point: Any, to_smiles: bool = True) -> List[Any]:
         """
@@ -44,6 +46,7 @@ class SmilesGenerator:
                 device
             ),
             search=self.search,
+            generate_len=self.generated_length
         )
 
         # convert numerical output to smiles
