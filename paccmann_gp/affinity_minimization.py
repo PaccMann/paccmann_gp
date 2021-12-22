@@ -1,5 +1,6 @@
 """Target affinity minimization module."""
 import torch
+from loguru import logger
 from typing import Any
 from pytoda.transforms import ToTensor, LeftPadding
 from .minimization_function import DecoderBasedMinimization
