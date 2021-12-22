@@ -94,8 +94,12 @@ class AffinityMinimization(DecoderBasedMinimization):
 
         # affinity predicition
         with torch.no_grad():
-            affinity_prediction, pred_dict = self.predictor(
-                smiles_tensor, protein_tensor
-            )
+            try:
+                affinity_prediction, _ = self.predictor(
+                    smiles_tensor, protein_tensor
+                )
+            except Exception:
+                affinity_prediction = torch.unsqueeze(torch.tensor([0.]*len(smiles)), 1)
+                logger.warning("Affinity calculation failed.")
 
         return 1 - (sum(torch.squeeze(affinity_prediction, 1).numpy()) / len(smiles))
