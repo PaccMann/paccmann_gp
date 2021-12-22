@@ -51,4 +51,7 @@ class MWMinimization(DecoderBasedMinimization):
             except Exception:
                 logger.warning("MW calculation failed.")
 
-        return 1 - exp(-abs(self.target - (sum(mweights) / len(mweights))))
+        if len(mweights) > 0:
+            return 1.0 - exp(-abs(self.target - (sum(mweights) / len(mweights))))
+        else:
+            return 1.0

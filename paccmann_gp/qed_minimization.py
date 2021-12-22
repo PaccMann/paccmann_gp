@@ -47,4 +47,7 @@ class QEDMinimization(DecoderBasedMinimization):
                 qed_values.append(0)
                 logger.warning("QED calculation failed.")
 
-        return 1 - (sum(qed_values) / len(qed_values))
+        if len(qed_values) > 0:
+            return 1.0 - (sum(qed_values) / len(qed_values))
+        else:
+            return 1.0
