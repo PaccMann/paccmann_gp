@@ -1,9 +1,11 @@
 """QED minimization module."""
+from typing import Any
+
 import torch
 from rdkit import Chem
-from rdkit.Chem.Descriptors import qed
 from loguru import logger
-from typing import Any
+from rdkit.Chem.Descriptors import qed
+
 from .minimization_function import DecoderBasedMinimization
 from .smiles_generator import SmilesGenerator
 

@@ -1,7 +1,9 @@
 """Minimization of a function callable with a SMILES string."""
+from typing import Any, Callable, Dict, Iterable
+
 import torch
 from loguru import logger
-from typing import Any, Callable, Dict, Iterable
+
 from .minimization_function import DecoderBasedMinimization
 from .smiles_generator import SmilesGenerator
 
@@ -14,7 +16,7 @@ class CallableMinimization(DecoderBasedMinimization):
         smiles_decoder: SmilesGenerator,
         evaluator: Callable[[str, Iterable[Any]], float],
         batch_size: int,
-        mode: str = 'min',
+        mode: str = "min",
         evaluator_kwargs: Dict = {},
     ):
         """
@@ -35,8 +37,8 @@ class CallableMinimization(DecoderBasedMinimization):
         super(CallableMinimization, self).__init__(smiles_decoder)
         self.evaluator = evaluator
         self.mode = mode
-        if mode not in ['min', 'max']:
-            raise ValueError(f'Unknown mode {mode}')
+        if mode not in ["min", "max"]:
+            raise ValueError(f"Unknown mode {mode}")
         self.batch = batch_size
         self.evaluator_kwargs = evaluator_kwargs
 
@@ -63,7 +65,7 @@ class CallableMinimization(DecoderBasedMinimization):
                 values.append(0)
                 logger.info("Calculation failed.")
 
-        if self.mode == 'max':
+        if self.mode == "max":
             return 1 - (sum(values) / len(values))
-        elif self.mode == 'min':
+        elif self.mode == "min":
             return sum(values) / len(values)

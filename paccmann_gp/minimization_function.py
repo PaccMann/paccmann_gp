@@ -1,5 +1,6 @@
 """Minimization function module."""
 from typing import Any
+
 from .smiles_generator import SmilesGenerator
 
 

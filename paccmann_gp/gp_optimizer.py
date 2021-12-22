@@ -1,6 +1,8 @@
 """GP optimization module."""
+from typing import Any, Dict
+
 from skopt import gp_minimize
-from typing import Dict, Any
+
 from .minimization_function import MinimizationFunction
 
 

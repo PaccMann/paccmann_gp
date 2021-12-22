@@ -1,5 +1,6 @@
 """Combined minimization module."""
-from typing import List, Optional, Any
+from typing import Any, List, Optional
+
 from .minimization_function import MinimizationFunction
 
 

@@ -1,10 +1,12 @@
 """Distance from target molecular weight minimization module."""
-import torch
-from rdkit import Chem
-from rdkit.Chem.Descriptors import MolWt
-from loguru import logger
 from math import exp
 from typing import Any
+
+import torch
+from rdkit import Chem
+from loguru import logger
+from rdkit.Chem.Descriptors import MolWt
+
 from .minimization_function import DecoderBasedMinimization
 from .smiles_generator import SmilesGenerator
 

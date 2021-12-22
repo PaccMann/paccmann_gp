@@ -1,8 +1,10 @@
 """SA minimization Class module."""
-import torch
-from paccmann_generator.drug_evaluators.sas import SAS
-from loguru import logger
 from typing import Any
+
+import torch
+from loguru import logger
+from paccmann_generator.drug_evaluators.sas import SAS
+
 from .minimization_function import DecoderBasedMinimization
 from .smiles_generator import SmilesGenerator
 

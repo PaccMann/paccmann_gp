@@ -1,8 +1,10 @@
 """Target affinity minimization module."""
+from typing import Any
+
 import torch
 from loguru import logger
-from typing import Any
-from pytoda.transforms import ToTensor, LeftPadding
+from pytoda.transforms import LeftPadding, ToTensor
+
 from .minimization_function import DecoderBasedMinimization
 from .smiles_generator import SmilesGenerator
 
@@ -73,34 +75,40 @@ class AffinityMinimization(DecoderBasedMinimization):
 
         smiles = self.generator.generate_smiles(batch_latent)
 
-        # smiles to tensor for affinity prediction
-        smiles_tensor = torch.cat(
-            [
-                torch.unsqueeze(
-                    self.to_tensor(
-                        self.pad_smiles_predictor(
-                            self.predictor.smiles_language.smiles_to_token_indexes(
-                                smile
+        if len(smiles) > 1:
+            # smiles to tensor for affinity prediction
+            smiles_tensor = torch.cat(
+                [
+                    torch.unsqueeze(
+                        self.to_tensor(
+                            self.pad_smiles_predictor(
+                                self.predictor.smiles_language.smiles_to_token_indexes(
+                                    smile
+                                )
                             )
-                        )
-                    ),
-                    0,
-                )
-                for smile in smiles
-            ],
-            dim=0,
-        )
+                        ),
+                        0,
+                    )
+                    for smile in smiles
+                ],
+                dim=0,
+            )
 
-        protein_tensor = self.protein_numeric.repeat(len(smiles), 1)
+            protein_tensor = self.protein_numeric.repeat(len(smiles), 1)
 
-        # affinity predicition
-        with torch.no_grad():
-            try:
-                affinity_prediction, _ = self.predictor(
-                    smiles_tensor, protein_tensor
-                )
-            except Exception:
-                affinity_prediction = torch.unsqueeze(torch.tensor([0.]*len(smiles)), 1)
-                logger.warning("Affinity calculation failed.")
-
-        return 1 - (sum(torch.squeeze(affinity_prediction, 1).numpy()) / len(smiles))
+            # affinity predicition
+            with torch.no_grad():
+                try:
+                    affinity_prediction, _ = self.predictor(
+                        smiles_tensor, protein_tensor
+                    )
+                except Exception:
+                    affinity_prediction = torch.unsqueeze(
+                        torch.tensor([0.0] * len(smiles)), 1
+                    )
+                    logger.warning("Affinity calculation failed.")
+            return 1.0 - (
+                sum(torch.squeeze(affinity_prediction, 1).numpy()) / len(smiles)
+            )
+        else:
+            return 1.0
