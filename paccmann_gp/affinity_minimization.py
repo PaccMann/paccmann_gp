@@ -47,7 +47,7 @@ class AffinityMinimization(DecoderBasedMinimization):
             self.to_tensor(
                 self.pad_protein_predictor(
                     self.predictor.protein_language.sequence_to_token_indexes(
-                        [self.protein]
+                        self.protein
                     )
                 )
             ),
