@@ -37,5 +37,5 @@ setup(
     long_description_content_type="text/markdown",
     package_data={"polyrxn": ["py.typed"]},
     install_requires=["loguru", "torch", "numpy", "scipy", "pytoda", "paccmann_generator", "paccmann_chemistry", "scikit-optimize"],
-    extras_require={"vcs": VCS_REQUIREMENTS}
+    # extras_require={"vcs": VCS_REQUIREMENTS}
 )
