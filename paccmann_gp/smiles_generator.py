@@ -45,7 +45,7 @@ def get_stack_size(size_hint: int = 2) -> int:
 
 
 class SmilesGenerator:
-    """ Smiles Generator """
+    """Smiles Generator"""
 
     def __init__(
         self,
@@ -80,7 +80,7 @@ class SmilesGenerator:
             molecules represented as SMILES or tokens.
         """
         molecules_numerical = self.model.generate(
-            latent_point,
+            latent_point.to(device),
             prime_input=torch.LongTensor([self.model.smiles_language.start_index]).to(
                 device
             ),
