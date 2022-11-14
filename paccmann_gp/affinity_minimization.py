@@ -108,7 +108,7 @@ class AffinityMinimization(DecoderBasedMinimization):
                     )
                     logger.warning("Affinity calculation failed.")
             return 1.0 - (
-                sum(torch.squeeze(affinity_prediction, 1).numpy()) / len(smiles)
+                sum(torch.squeeze(affinity_prediction.cpu(), 1).numpy()) / len(smiles)
             )
         else:
             return 1.0
