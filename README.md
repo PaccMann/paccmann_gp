@@ -1,6 +1,7 @@
 [![Python package](https://github.com/PaccMann/paccmann_gp/actions/workflows/python-package.yml/badge.svg)](https://github.com/PaccMann/paccmann_gp/actions/workflows/python-package.yml)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI:10.1021/acs.jcim.1c00889](https://zenodo.org/badge/DOI/10.1021/acs.jcim.1c00889.svg)](https://doi.org/10.1021/acs.jcim.1c00889)
 
 
 # paccmann_gp
@@ -44,11 +45,16 @@ The trained SVAE and affinity models can be downloaded from the SELFIESVAE and a
 If you use this repo in your projects, please temporarily cite the following:
 
 ```bib
-@article{born2021active,
-  title={Active site sequence representation of human kinases outperforms full sequence for affinity prediction and inhibitor generation: 3D effects in a 1D model},
-  author={Born, Jannis and Huynh, Tien and Stroobants, Astrid and Cornell, Wendy and Manica, Matteo},
-  publisher={ChemRxiv},
-  doi={10.33774/chemrxiv-2021-np7xj},
-  year={2021}
+@article{born2022active,
+	author = {Born, Jannis and Huynh, Tien and Stroobants, Astrid and Cornell, Wendy D. and Manica, Matteo},
+	title = {Active Site Sequence Representations of Human Kinases Outperform Full Sequence Representations for Affinity Prediction and Inhibitor Generation: 3D Effects in a 1D Model},
+	journal = {Journal of Chemical Information and Modeling},
+	volume = {62},
+	number = {2},
+	pages = {240-257},
+	year = {2022},
+	doi = {10.1021/acs.jcim.1c00889},
+	note ={PMID: 34905358},
+	URL = {https://doi.org/10.1021/acs.jcim.1c00889}
 }
 ```
