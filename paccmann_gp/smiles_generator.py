@@ -100,7 +100,7 @@ class SmilesGenerator:
                 for molecule_numerical in iter(molecules_numerical)
             ]
 
-            if "selfies" in self.model.smiles_language.name:
+            if "selfies" in self.model.smiles_language.name.lower():
                 smiles = [
                     self.model.smiles_language.selfies_to_smiles(sm) for sm in smiles_num
                 ]
