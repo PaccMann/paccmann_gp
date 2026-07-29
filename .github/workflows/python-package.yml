@@ -30,7 +30,7 @@ jobs:
         if [ -f requirements.txt ]; then
           pip install --use-deprecated=legacy-resolver -r requirements.txt
         fi
-        python -m pip install .
+        python -m pip install --no-deps .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
